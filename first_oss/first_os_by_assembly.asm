@@ -23,8 +23,9 @@ entry:
 	;; ok, let's write some code
 	mov ax, 0
 	mov ss, ax		; because can't move number to ss, so move to ax first.
-	mov sp, 0x7c00
-	mov si, hello_msg
+	mov ax, hello_msg
+	add ax, 0x7c00		; because this code will load base to 0x7c00
+	mov si, ax
 
 putloop:	
 	;; [si] is the char*
@@ -32,7 +33,7 @@ putloop:
 	cmp al, 0
 	je fi
 	mov ah, 0xe
-	int 0x10		; 0x10 is put a char to screen, bx, is the color, si is the addr
+	int 0x10		; 0x10 is put a char to screen, bx, is the color, al is the charactor
 	add si, 1
 	jmp putloop
 
@@ -42,7 +43,7 @@ fi:
 
 hello_msg:	
 	db 0xa, 0xa		; I can't figure out why 0xa is new line for now
-	db "hello floppy oss"
+	db "hello simple os"
 	db 0xa
 	db 0
 
@@ -55,7 +56,6 @@ RESB 0x1fe-($-$$)
 ; 当第一扇区的最后两个字节为0x55, 0xaa的时候，计算会认为此软盘是一个启动软盘
 ; 否则就不认为是。
 DB 0x55, 0xaa
-
 
 
 DB 0xf0, 0xff, 0xff, 0x00, 0x00, 0x00, 0x00, 0x00
