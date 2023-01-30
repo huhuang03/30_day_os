@@ -1,0 +1,5 @@
+* Note
+** boot by qumu
+qemu-system-i386 -drive file=first_os.img,format=raw
+
+* Link
