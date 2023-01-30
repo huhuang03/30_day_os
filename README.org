@@ -3,3 +3,4 @@
 qemu-system-i386 -drive file=first_os.img,format=raw
 
 * Link
+- [[https://www.nasm.us/][nasm]]
