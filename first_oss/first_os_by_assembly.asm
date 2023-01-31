@@ -20,19 +20,16 @@ DB "FAT12   "       ; len.  8
 RESB 18
 
 entry:
-	;; ok, let's write some code
-	mov ax, 0
-	mov ss, ax		; because can't move number to ss, so move to ax first.
 	mov ax, hello_msg
-	add ax, 0x7c00		; because this code will load base to 0x7c00
-	mov si, ax
+	add ax, 0x7c00
+	mov si, ax	; any better idea to write a relocateable code?
 
 putloop:	
 	;; [si] is the char*
 	mov al, [si]
 	cmp al, 0
 	je fi
-	mov ah, 0xe
+	mov ah, 0xe		; ah is the color
 	int 0x10		; 0x10 is put a char to screen, bx, is the color, al is the charactor
 	add si, 1
 	jmp putloop
