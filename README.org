@@ -1,6 +1,17 @@
 * Note
-** boot by qumu
-qemu-system-i386 -drive file=first_os.img,format=raw
+0x7c00会加载第一扇区，到0x7dff。所以0x7e00到0x9fbff没有人用
+
+18个扇区换柱面
+
+* 软盘
+** 写软盘
+文件名写到0x002600
+文件内容写到0x004200
+
+
 
 * Link
 - [[https://www.nasm.us/][nasm]]
+- 
+#+begin_export html
+#+end_export
