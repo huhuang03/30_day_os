@@ -9,9 +9,9 @@ cpu -> bios -> floppy(first sector to 0x7c00, and pc to 0x7c00)
 ** nasm
 nasm EQU used to define constant.
 
-** x86 assembly
+* x86 assembly
 
-*** write to screen
+** write to screen
 #+BEGIN_SRC asm
 putLoop:
     mov al, [si]    ; just check '\0'
@@ -23,16 +23,21 @@ putLoop:
     jmp putLoop
 #+END_SRC
 
-*** read floppy
+** int 0x13 read floppy
 #+begin_src asm
-mov es, ax			; read dest memory location
+mov bl, 0		; A驱动器（第一个驱动器）
+mov ah, 2		; Read Sectors From Drive
+; Register CX contains both the cylinder number
+; (10 bits, possible values are 0 to 1023) and the sector number
+; (6 bits, possible values are 1 to 63). Cylinder and Sector bits are numbered below:
+mov cx, 0
 mov ch, 0		; 柱面
-mov dh, 0		; 磁头
 mov cl, 2		; 扇区
-mov ah, 2		; 读盘
+
+mov es, ax		; read dest memory location
+mov dh, 0		; 磁头
 mov al, 1		; 1个扇区
 mov bx, 0		; clear bx?
-mov bl, 0		; A驱动器（第一个驱动器）
 int 0x13		; 磁盘读写方法
 jc error		; carry is has error
 #+end_src
