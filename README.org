@@ -10,8 +10,20 @@ cpu -> bios -> floppy(first sector to 0x7c00, and pc to 0x7c00)
 nasm EQU used to define constant.
 
 ** x86 assembly
-*** interctor read floopy
 
+*** write to screen
+#+BEGIN_SRC asm
+putLoop:
+    mov al, [si]    ; just check '\0'
+    cmp al, 0
+    je fi           ; this is the dnd
+    mov ah, 0xe		; ah is the color
+    int 0x10		; 0x10 is put a char to screen, bx, is the color, al is the charactor
+    add si, 1
+    jmp putLoop
+#+END_SRC
+
+*** read floppy
 #+begin_src asm
 mov es, ax			; read dest memory location
 mov ch, 0		; 柱面
@@ -34,10 +46,3 @@ jc error		; carry is has error
 
 * Link
 - [[https://www.nasm.us/][nasm]]
-- 
-#+begin_export html
-#+end_export
-
-
-cyls 0xff0
-jmp 0xc200
