@@ -20,6 +20,7 @@ DB "HELLO-OS   "    ; len. 11
 DB "FAT12   "       ; len.  8
 RESB 18
 
+entry:
 ; ok, read floopy 0-1 to 10-18
 mov es, ax			; read dest memory location
 mov ch, 0		; 柱面
@@ -31,6 +32,11 @@ mov bx, 0		; clear bx?
 mov bl, 0		; A驱动器（第一个驱动器）
 int 0x13		; 磁盘读写方法
 jc error		; carry is has error
+
+success:
+    mov ax, success_msg
+    add ax, 0x7c00
+    mov si, ax
 
 error:
     ;; we know that this is load at loacation of 0x7c00. so we can just add 0x7c00
@@ -54,10 +60,15 @@ fi:
     hlt
     jmp fi
 
+success_msg:
+    db 0xa, 0xa
+    db "write floopy error"
+    db 0xa, 0xa
+
 error_msg:
-db 0xa, 0xa
-db "write floopy error"
-db 0xa, 0xa
+    db 0xa, 0xa
+    db "write floopy error"
+    db 0xa, 0xa
 
 ; the book is $
 ; but pelase see https://stackoverflow.com/questions/14928741/whats-the-real-meaning-of-in-nasm

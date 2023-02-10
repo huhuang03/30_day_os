@@ -1,5 +1,5 @@
 # this can simulator write content to a floppy
-# usage make_floppy.py ilp.asm os.asm
+# usage make_floppy.py ipl.asm os.asm
 import os
 import subprocess
 import sys
