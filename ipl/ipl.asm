@@ -20,22 +20,39 @@ DB "HELLO-OS   "    ; len. 11
 DB "FAT12   "       ; len.  8
 RESB 18
 
-entry:
-mov es, ax			; read dest memory location
+entry1:
+mov ax, 0x7e00  ; jiazai 加载地址
+mov es, ax		; read dest memory location
+
+mov bl, 0		; 1st floppy disk ( "drive A:" )
+mov ah, 2		; Read Sectors From Drive
+
+; sector 扇面
+; cylinder 柱面
+; Register CX contains both the cylinder number (10 bits, possible values are 0 to 1023) 
+; and the sector number (6 bits, possible values are 1 to 63). 
+; Cylinder and Sector bits are numbered below:
+; CX =       ---CH--- ---CL---
+; cylinder : 76543210 98
+; sector   :            543210
+mov cx, 0
 mov ch, 0		; 柱面
-mov dh, 0		; 磁头
-mov cl, 2		; 扇区
-mov ah, 2		; 读盘
-mov al, 1		; 1个扇区
-mov bx, 0		; clear bx?
-mov bl, 0		; A驱动器（第一个驱动器）
+mov cl, 0		; 扇区
+
+mov dh, 0		; head 0 or 1
+mov dl, 0       ; Devier, but for now, I don't know what's this
+mov al, 1		; setors to read count
+
+mov bx, 0
 int 0x13		; 磁盘读写方法
 jc error		; carry is has error
 
+entry:
 success:
     mov ax, success_msg
     add ax, 0x7c00
     mov si, ax
+    jmp putLoop
 
 error:
     ;; we know that this is load at loacation of 0x7c00. so we can just add 0x7c00
@@ -61,8 +78,8 @@ fi:
 
 success_msg:
     db 0xa, 0xa
-    db "write floopy error"
-    db 0xa, 0xa
+    db "some success value"
+    db 0xa, 0xa, 0x0
 
 error_msg:
     db 0xa, 0xa
