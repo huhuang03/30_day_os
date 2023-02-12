@@ -1,8 +1,6 @@
-ipl: ipl.asm
-	nasm ipl.asm -o ipl.img
-
-run_ipl: ipl
+run: ipl
 	qemu-system-i386 -drive file=ipl.img,format=raw,if=floppy -boot a
 
-run:
-	qemu-system-i386 -drive file=load_floppy.img,format=raw,if=floppy -boot a
+ipl: ipl.asm
+	rm ipl.img
+	nasm ipl.asm -o ipl.img

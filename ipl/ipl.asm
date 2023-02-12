@@ -1,5 +1,5 @@
-;; where did you load?
-JMP entry	; will compile to jump 0x4e(code is :0xeb, 0x4e), 0x4e is the entry pos. jump 0x4e is a relative jump
+ORG 7c00h
+JMP entry
 DB 0x90
 DB "HELLOIPL"   ; 启动去的名称可以是任意的字符串（8字节）
 DW 512          ; 每个扇区的大小，fixed
@@ -20,44 +20,34 @@ DB "HELLO-OS   "    ; len. 11
 DB "FAT12   "       ; len.  8
 RESB 18
 
-entry1:
-mov ax, 0x7e00  ; jiazai 加载地址
-mov es, ax		; read dest memory location
-
-mov bl, 0		; 1st floppy disk ( "drive A:" )
-mov ah, 2		; Read Sectors From Drive
-
-; sector 扇面
-; cylinder 柱面
-; Register CX contains both the cylinder number (10 bits, possible values are 0 to 1023) 
-; and the sector number (6 bits, possible values are 1 to 63). 
-; Cylinder and Sector bits are numbered below:
-; CX =       ---CH--- ---CL---
-; cylinder : 76543210 98
-; sector   :            543210
-mov cx, 0
-mov ch, 0		; 柱面
-mov cl, 0		; 扇区
-
-mov dh, 0		; head 0 or 1
-mov dl, 0       ; Devier, but for now, I don't know what's this
-mov al, 1		; setors to read count
-
-mov bx, 0
-int 0x13		; 磁盘读写方法
-jc error		; carry is has error
-
 entry:
+   xor ax, ax    ; make sure ds is set to 0
+   mov ds, ax
+   cld
+   ; start putting in values:
+   mov ah, 2h    ; int13h function 2
+   mov al, 63    ; we want to read 63 sectors
+   mov ch, 0     ; from cylinder number 0
+   mov cl, 2     ; the sector number 2 - second sector (starts from 1, not 0)
+   mov dh, 0     ; head number 0
+   xor bx, bx    
+   mov es, bx    ; es should be 0
+   mov bx, 7e00h ; 512bytes from origin address 7c00h
+   int 13h
+   jc error
+   jmp success     ; jump to the next sector
+
+read_loop:
+    jmp success
+    jmp 0xc200
+
 success:
     mov ax, success_msg
-    add ax, 0x7c00
     mov si, ax
     jmp putLoop
 
 error:
-    ;; we know that this is load at loacation of 0x7c00. so we can just add 0x7c00
     mov ax, error_msg
-    add ax, 0x7c00
     mov si, ax
 
 putLoop:
@@ -67,10 +57,9 @@ putLoop:
     ; when ah = 0xe
     ; AL = Character, BH = Page Number, BL = Color (only in graphic mode)
     mov ah, 0xe		; ah is the color
-    int 0x10		; 0x10 is put a char to screen, bx, is the color, al is the charactor
+    int 0x10		; 0x10 is put a char to screen, ah, is the color, al is the charactor
     add si, 1
     jmp putLoop
-
 
 fi:
     hlt

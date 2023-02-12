@@ -6,6 +6,8 @@ cpu -> bios -> floppy(first sector to 0x7c00, and pc to 0x7c00)
 
 这里的软盘是10个柱面，每个柱面18个扇区
 
+每个扇区为512个字节
+
 ** nasm
 nasm EQU used to define constant.
 
@@ -56,11 +58,20 @@ jc error		; carry is has error
 #+end_src
 
 * 软盘
+** a sector is 521(0x200) byte
 ** 写软盘
 文件名写到0x002600
 文件内容写到0x004200
 
+** C0-H0-S1
+柱面0磁头0扇区1
 
+** locations
+The content is write to floopy offset 0x004200.
+the ipl load floppy at location 0x8000, so we need jump to 0xc200
+
+* Locations
+0x7c00 - 0x7dff(521 byte) is the boot location, bios will read the floppy first secotr to here, and jmp to here!
 
 * Link
 - [[https://www.nasm.us/][nasm]]
