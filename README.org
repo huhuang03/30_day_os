@@ -44,7 +44,7 @@ mov ah, 2		; Read Sectors From Drive
 ; cylinder : 76543210 98
 ; sector   :            543210
 
-mov cx, 0
+mov cx, 0       ; , start from 1, value 1 to 63
 mov ch, 0		; 柱面
 mov cl, 0		; 扇区
 
@@ -72,6 +72,8 @@ the ipl load floppy at location 0x8000, so we need jump to 0xc200
 
 * Locations
 0x7c00 - 0x7dff(521 byte) is the boot location, bios will read the floppy first secotr to here, and jmp to here!
+
+0x8000 + 0x4200 = 0xc200
 
 * Link
 - [[https://www.nasm.us/][nasm]]

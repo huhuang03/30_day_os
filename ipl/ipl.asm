@@ -21,24 +21,21 @@ DB "FAT12   "       ; len.  8
 RESB 18
 
 entry:
-   xor ax, ax    ; make sure ds is set to 0
-   mov ds, ax
-   cld
-   ; start putting in values:
-   mov ah, 2h    ; int13h function 2
-   mov al, 63    ; we want to read 63 sectors
-   mov ch, 0     ; from cylinder number 0
-   mov cl, 2     ; the sector number 2 - second sector (starts from 1, not 0)
-   mov dh, 0     ; head number 0
-   xor bx, bx    
-   mov es, bx    ; es should be 0
-   mov bx, 7e00h ; 512bytes from origin address 7c00h
-   int 13h
-   jc error
-   jmp success     ; jump to the next sector
-
-read_loop:
-    jmp success
+    xor ax, ax    ; make sure ds is set to 0
+    mov ds, ax
+    cld
+    ; start putting in values:
+    mov ah, 2h    ; int13h function 2
+    mov al, 63    ; we want to read 63 sectors
+    mov ch, 0     ; from cylinder number 0
+    mov cl, 1     ; the sector number 2 - second sector (starts from 1, not 0)
+    mov dh, 0     ; head number 0
+    xor bx, bx    
+    mov es, bx    ; es should be 0
+    mov bx, 0x8000 ; 512bytes from origin address 7c00h
+    int 13h
+    jc error
+    ; jmp success     ; jump to the next sector
     jmp 0xc200
 
 success:
