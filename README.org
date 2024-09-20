@@ -1,0 +1,1 @@
+This is the pactice project for 30_day_os book
