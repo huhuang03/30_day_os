@@ -1,0 +1,3 @@
+first cpu reset, set pc to a fixed 0xFFFF0 which is the bios location
+
+bios load floppy first section to 0x6500?? and jump to 0x6500

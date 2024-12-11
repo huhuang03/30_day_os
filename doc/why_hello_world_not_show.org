@@ -1,1 +1,2 @@
-the key option is `--nographic`
+on mac, the key option is `--nographic`
+on windows, look like the option can ommit
