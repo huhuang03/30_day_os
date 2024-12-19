@@ -1,1 +1,4 @@
 This is the pactice project for 30_day_os book
+
+The book need read with the source code.
+https://github.com/imangoa/os/blob/master/projects/03_day/harib00f/ipl.nas

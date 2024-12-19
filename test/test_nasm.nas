@@ -1,0 +1,4 @@
+[bits 32]
+ORG 0x7c00
+
+JMP 0x7e00

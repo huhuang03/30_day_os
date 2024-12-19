@@ -1,0 +1,11 @@
+ah 2 read from floppy
+al num of sector 
+ch citou
+cl 扇区号 | ((柱面号&0x300) >> 2)
+dh cidao(0-255)
+dl qudongqi(0-3)
+
+read into es:bx
+
+cf = 0 no error
+cf = 1 has error

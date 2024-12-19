@@ -1,0 +1,5 @@
+* flooy
+- a sector has 512(0x200)byte.
+- a flooy has 2880 sector, so has 1440kb.
+- bios load floopy first sector to 0xc700 and set pc to the location
+- 柱面有80个，每个柱面有18个扇区
