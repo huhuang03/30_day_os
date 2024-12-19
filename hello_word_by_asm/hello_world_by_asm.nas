@@ -1,13 +1,3 @@
-;;; fucntion: load other content of the floppy after bios load first sector for us
-
-;; the bios load this ipl to 0x7c00??
-;; and a secotr is 0x200 size, so the target is 0x7e00
-
-;;; C(cylinder)柱面 H磁头 S(sector)
-;;; s has 18
-;;; cylinder has 18
-;;; and it's in this the order if we use a file to monitor this floppy
-
 ORG 0x7c00
 
 JMP start			; eb00(if start is at 2) jmp xx, 2 byte size
@@ -49,17 +39,19 @@ _hlt:
 	jmp _hlt
 
 err_msg:
-	DB "\nload sector wrong\n"
+	DB 0x0a,"load sector wrong",0x0a
 	DB 0
 
+	DB "CURRENT ADDRESS: ", $
+	DB "END"
+	DB "$$ADDRESS: ", $$
+	DB "END"
+
 msg:
-	DB "\n\n"
+	DB 0x0a,0x0a
 	DB "Hello, world"
-	DB "\n"
+	DB 0x0a
 	DB 0
-	FILL_EMPTY equ 0x200-2-$
-	RESB FILL_EMPTY
-	; RESB 0x7e00
+	TIMES 0x200 - ($-$$) - 2 DB 0
 	DB 0x55, 0xaa		; magic word that is a ilp
-	_RESB equ 0x168000-$
-	RESB _RESB
+	TIMES 0x168000 - ($-$$) DB 0

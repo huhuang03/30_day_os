@@ -7,6 +7,8 @@
 ;;; s has 18
 ;;; cylinder has 18
 ;;; and it's in this the order if we use a file to monitor this floppy
+;; floppy is C0-H0-S0 ~ C0-H0-S18 ~ C0-H1-S0 ~ C0-H1-S18 ~ C1-H0-S1
+;; 80 cylinder 扇区index从1开始
 
 %define TARGET 0X7C00
 
@@ -32,23 +34,9 @@ db "Hello-OS   "	; size must be 11 byte
 db "FAT12   "		; must be 8 byte
 RESB 18			 
 
-load:
-	mov ax, TARGET				; target
-	mov es, ax					;; 
-	mov ch, 0					; target
-	mov dh, 0					; 磁头
-	mov cl, 2					; 扇区
-	mov ch, 0	
-
-	mov al, 1					; num of sector
-	mov bx, 0
-
-	mov dl, 0x0					; A驱动器
-	int 0x13
-
 error:
 	mov si, err_msg
-	jmp _hlt
+	jmp put_loop
 
 put_loop:
 	mov al, [si]				; al = the char to show
@@ -61,12 +49,51 @@ put_loop:
 	jmp put_loop
 
 
-load_loop:
-	pass
+load:
+	mov al, 17
+	mov bx, TARGET
+	mov es, bx
+	jmp load_loop
+	mov ch, 0
+	mov cl, 2
+	mov dh, 0
+
+;; 每次读取al, 第一次读取17个，之后每次都读取18个sector
+load_loop:				
+;; es, bx is the target
+;; al count of sector, max i 63
+;; ch 柱面号的低8位
+;; cl 底6位为扇区号，高2位存储柱面号的高2位
+;; dh磁头号
+;; dl驱动器号，0x0为软盘，0x80为硬盘
+
+	mov ah, 2					; read
+	;; how to loop dh?
+	mov dl, 0					; A驱动器
+	mov bx, 0
+	;; read floop to [es:bx]
+	int 0x13
+	jc error
+
+next:
+	mov bx, es
+	add bx, 0x2400
+	mov es, bx
+	;; 磁头循环
+	mov cl, 1
+	mov al, 18
+	add dh, 1
+	cmp dh, 2
+	jb load_loop				; dh < 2, load again
+	mov dh, 0
+	add ch, 1
+	cmp ch, 0x80				; check 柱面
+	jb load_loop				 
+	jmp fin
 
 _hlt:
 	hlt
-	jmp hlt
+	jmp _hlt
 
 ;; if not jump to os, whty hilt??
 fin:
@@ -75,15 +102,13 @@ fin:
 	; JMP fin
 
 err_msg:
-	DB "\nload sector wrong\n"
+	DB 0x0a,"load sector wrong", 0x0a
 	DB 0
 
 msg:
-	DB "\n\n"
+	DB 0xa,0xa
 	DB "Hello, world"
-	DB "\n"
+	DB 0xa
 	DB 0
-	FILL_EMPTY equ 0x7dff-2-$
-	RESB FILL_EMPTY
+	TIMES 512-2-($-$$) DB 0
 	DB 0x55, 0xaa		; magic word that is a ilp
-	
