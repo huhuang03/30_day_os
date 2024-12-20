@@ -28,17 +28,14 @@ fn main() -> io::Result<()> {
     let output_size = output_metadata.len();
 
     const EXPECTED_SIZE: u64 = 0x168000;
-    if output_size == EXPECTED_SIZE {
-        println!("Output file created successfully with size: 0x{:X} bytes", output_size);
-    } else {
-        eprintln!(
-            "Error: Output file size is 0x{:X} bytes, expected 0x{:X} bytes",
-            output_size, EXPECTED_SIZE
-        );
-        return Err(io::Error::new(
-            io::ErrorKind::Other,
-            "Output file size does not match the expected size",
-        ));
+
+    if output_size < EXPECTED_SIZE {
+        // 计算需要补充的字节数
+        let padding_size = EXPECTED_SIZE - output_size;
+        // 创建填充缓冲区
+        let padding = vec![0u8; padding_size as usize];
+        // 写入填充缓冲区到文件
+        output_file.write_all(&padding)?;
     }
 
     Ok(())

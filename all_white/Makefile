@@ -1,13 +1,15 @@
 ipl.bin: ../ipl/ipl.nas
 	nasm ../ipl/ipl.nas -o ipl.bin -l ipl.lst
 
-all_white.o:
-	pass
+naskfunc.o: ../naskfunc.nas
+	nasm -f elf ../naskfunc.nas -o naskfunc.o -l naskfunc.lst
 
-naskfunc.obj: ../naskfunc.nas
-	nasm ../naskfunc.nas -o naskfunc.obj -l naskfunc.lst
-
-
-sys.img:
-	link all_white.o naskfunc.obj -o sys_content.img
+all_white.o: all_white.c
+	gcc -m32 -ffreestanding --oformat binary -c all_white.c -o all_white.o 
+ 
+sys.img: all_white.o naskfunc.o
+	ld -o sys.img naskfunc.o all_white.o
 	cargo script ../make_img.rs ../ipl/ipl.bin sys_content.img
+
+clean:
+	rm ../*.o *.o
