@@ -1,12 +1,20 @@
 use std::fs::{self, File};
 use std::io::{self, Read, Write};
 use std::path::Path;
+use std::env;
+use std::process;
 
 fn main() -> io::Result<()> {
-    // 输入文件路径
-    let file1_path = "file1.bin";
-    let file2_path = "file2.bin";
-    let output_path = "output.bin";
+    let args: Vec<String> = env::args().collect();
+    if args.len() < 4 {
+        eprintln!("Usage: {} ilp_path content_path out_path", args[1]);
+        process::exit(1);
+    }
+
+    let file1_path = args[1].clone();
+    let file2_path = args[2].clone();
+    let output_path = args[3].clone();
+
 
     // 打开输入文件并读取内容
     let mut file1 = File::open(file1_path)?;
@@ -19,7 +27,7 @@ fn main() -> io::Result<()> {
     file2.read_to_end(&mut buffer2)?;
 
     // 创建输出文件并写入合并的内容
-    let mut output_file = File::create(output_path)?;
+    let mut output_file = File::create(output_path.clone())?;
     output_file.write_all(&buffer1)?;
     output_file.write_all(&buffer2)?;
 
