@@ -40,17 +40,14 @@ load:
 	shr bx, 4
 	mov es, bx
 	mov ch, 0
-	mov cl, 1
+	mov cl, 2
 	mov dh, 0
 	jmp load_loop
 
-;; 每次读取al, 第一次读取17个，之后每次都读取18个sector
 load_loop:				
-	call show_info
-	mov cl, 1
 	mov dl, 0					; A驱动器
 	mov bx, 0 					; read floop to [es:bx]
-	mov al, 18					; num of sector to read
+	mov al, 1					; num of sector to read
 	mov ah, 2					; read
 	int 0x13
 	jc error					; carry if something error
@@ -58,9 +55,15 @@ load_loop:
 next:
 	push bx
 	mov bx, es
-	add bx, 0x240
+	add bx, 0x20
 	mov es, bx
 	pop bx
+
+	;; secotr循环
+	add cl, 1
+	cmp cl, 19
+	jb load_loop
+	mov cl, 1
 
 	;; 磁头循环
 	add dh, 1
@@ -70,7 +73,8 @@ next:
 	;; 柱面循环
 	mov dh, 0
 	add ch, 1
-	cmp ch, 80				; check 柱面
+	call show_info
+	cmp ch, 30				; check 柱面
 	jb load_loop				 
 	;; 好像永远走不到这里吗
 	; jmp error
@@ -105,7 +109,7 @@ show_info:
 	push ax
 
 	mov al, ch
-	add al, '0'
+	add al, 'a'
 	mov ah, 0x0e
 	int 0x10
 
