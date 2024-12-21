@@ -10,7 +10,7 @@
 ;; floppy is C0-H0-S0 ~ C0-H0-S18 ~ C0-H1-S0 ~ C0-H1-S18 ~ C1-H0-S1
 ;; 80 cylinder 扇区index从1开始
 
-%define TARGET 0X9f00
+%define TARGET 0X8200
 
 ORG 0x7c00
 
@@ -40,16 +40,17 @@ load:
 	shr bx, 4
 	mov es, bx
 	mov ch, 0
-	mov cl, 2
+	mov cl, 1
 	mov dh, 0
 	jmp load_loop
 
 ;; 每次读取al, 第一次读取17个，之后每次都读取18个sector
 load_loop:				
 	call show_info
+	mov cl, 1
 	mov dl, 0					; A驱动器
 	mov bx, 0 					; read floop to [es:bx]
-	mov al, 1					; num of sector to read
+	mov al, 18					; num of sector to read
 	mov ah, 2					; read
 	int 0x13
 	jc error					; carry if something error
@@ -57,15 +58,9 @@ load_loop:
 next:
 	push bx
 	mov bx, es
-	add bx, 0x20
+	; add bx, 0x240
 	mov es, bx
 	pop bx
-
-	;; 尝试一次读取一个sector
-	add cl, 1
-	cmp cl, 19
-	jb load_loop
-	mov cl, 1
 
 	;; 磁头循环
 	add dh, 1
@@ -78,7 +73,7 @@ next:
 	cmp ch, 80				; check 柱面
 	jb load_loop				 
 	;; 好像永远走不到这里吗
-	jmp error
+	; jmp error
 	jmp fin
 
 error:
