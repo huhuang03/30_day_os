@@ -15,6 +15,7 @@
 ORG 0x7c00
 
 JMP load			; eb00(if start is at 2) jmp xx, 2 byte size
+; JMP show_ah			; eb00(if start is at 2) jmp xx, 2 byte size
 nop				; 1 byte size
 db "HELLOLPL"			; must 8 byte
 dw 521				; a sector size
@@ -34,26 +35,14 @@ db "Hello-OS   "	; size must be 11 byte
 db "FAT12   "		; must be 8 byte
 RESB 18			 
 
-
-put_loop:
-	mov al, [si]				; al = the char to show
-	add si, 1
-	cmp al, 0
-	JE _hlt
-	mov ah, 0xe					; ah = 0xe show char
-	mov bx, 15
-	INT 0x10
-	jmp put_loop
-
-
 load:
 	mov al, 17
 	mov bx, TARGET
 	mov es, bx
-	jmp load_loop
 	mov ch, 0
 	mov cl, 2
 	mov dh, 0
+	jmp load_loop
 
 ;; 每次读取al, 第一次读取17个，之后每次都读取18个sector
 load_loop:				
@@ -63,34 +52,38 @@ load_loop:
 ;; cl 底6位为扇区号，高2位存储柱面号的高2位
 ;; dh磁头号
 ;; dl驱动器号，0x0为软盘，0x80为硬盘
+	call show_info
 
-	mov ah, 2					; read
 	;; how to loop dh?
 	mov dl, 0					; A驱动器
-	mov bx, 0
-	;; read floop to [es:bx]
+	mov bx, 0 					; read floop to [es:bx]
+	mov ah, 2					; read
 	int 0x13
-	jc error
-
-error:
-	mov si, err_msg
-	jmp put_loop
+	; jc show_ah
+	jc error					; carry if something error
 
 next:
 	mov bx, es
 	add bx, 0x2400
 	mov es, bx
-	;; 磁头循环
 	mov cl, 1
 	mov al, 18
+	;; 磁头循环
 	add dh, 1
 	cmp dh, 2
 	jb load_loop				; dh < 2, load again
+
 	mov dh, 0
 	add ch, 1
 	cmp ch, 0x80				; check 柱面
 	jb load_loop				 
+	;; 好像永远走不到这里吗
+	jmp error
 	jmp fin
+
+error:
+	mov si, err_msg
+	jmp put_loop
 
 _hlt:
 	hlt
@@ -111,5 +104,40 @@ msg:
 	DB "Hello, world"
 	DB 0xa
 	DB 0
-	TIMES 512-2-($-$$) DB 0
-	DB 0x55, 0xaa		; magic word that is a ilp
+
+show_info:
+ ;; show ch and ah
+	push ax
+
+	mov al, ch
+	add al, '0'
+	mov ah, 0x0e
+	int 0x10
+
+	mov al, dh
+	add al, '0'
+	mov ah, 0x0e
+	int 0x10
+
+	mov al, cl
+	add al, '0'
+	mov ah, 0x0e
+	int 0x10
+
+	mov al, ' '
+	int 0x10
+	pop ax
+	ret
+;; end show ch and ah
+
+put_loop:
+	mov al, [si]				; al = the char to show
+	add si, 1
+	cmp al, 0
+	JE _hlt
+	mov ah, 0xe					; ah = 0xe show char
+	INT 0x10
+	jmp put_loop
+
+TIMES 512-2-($-$$) DB 0
+DB 0x55, 0xaa		; magic word that is a ilp
