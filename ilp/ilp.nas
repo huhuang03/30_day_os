@@ -10,7 +10,7 @@
 ;; floppy is C0-H0-S0 ~ C0-H0-S18 ~ C0-H1-S0 ~ C0-H1-S18 ~ C1-H0-S1
 ;; 80 cylinder 扇区index从1开始
 
-%define TARGET 0X8200
+%define TARGET 0X7e00
 
 ORG 0x7c00
 
@@ -55,7 +55,7 @@ load_loop:
 next:
 	push bx
 	mov bx, es
-	add bx, 0x20
+	; add bx, 0x20
 	mov es, bx
 	pop bx
 
@@ -74,7 +74,7 @@ next:
 	mov dh, 0
 	add ch, 1
 	call show_info
-	cmp ch, 30				; check 柱面
+	cmp ch, 80				; check 柱面
 	jb load_loop				 
 	;; 好像永远走不到这里吗
 	; jmp error
@@ -109,7 +109,7 @@ show_info:
 	push ax
 
 	mov al, ch
-	add al, 'a'
+	add al, 'A'
 	mov ah, 0x0e
 	int 0x10
 
