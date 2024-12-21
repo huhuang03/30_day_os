@@ -1,6 +1,6 @@
 ;;; fucntion: load other content of the floppy after bios load first sector for us
 
-;; the bios load this ipl to 0x7c00??
+;; the bios load this ipl to 0x7c00
 ;; and a secotr is 0x200 size, so the target is 0x7e00
 
 ;;; C(cylinder)柱面 H磁头 S(sector)
@@ -10,7 +10,7 @@
 ;; floppy is C0-H0-S0 ~ C0-H0-S18 ~ C0-H1-S0 ~ C0-H1-S18 ~ C1-H0-S1
 ;; 80 cylinder 扇区index从1开始
 
-%define TARGET 0X7C00
+%define TARGET 0X7e00
 
 ORG 0x7c00
 
@@ -18,7 +18,7 @@ JMP load			; eb00(if start is at 2) jmp xx, 2 byte size
 ; JMP show_ah			; eb00(if start is at 2) jmp xx, 2 byte size
 nop				; 1 byte size
 db "HELLOLPL"			; must 8 byte
-dw 521				; a sector size
+dw 512				; a sector size
 db 1				; cluster size, must be 1
 dw 1
 db 2
@@ -38,6 +38,7 @@ RESB 18
 load:
 	mov al, 17
 	mov bx, TARGET
+	shr bx, 4
 	mov es, bx
 	mov ch, 0
 	mov cl, 2
@@ -50,24 +51,26 @@ load_loop:
 ;; al count of sector, max i 63
 ;; ch 柱面号的低8位
 ;; cl 底6位为扇区号，高2位存储柱面号的高2位
-;; dh磁头号
-;; dl驱动器号，0x0为软盘，0x80为硬盘
+;; dh 磁头号
+;; dl 驱动器号，0x0为软盘，0x80为硬盘
 	call show_info
 
 	;; how to loop dh?
+	mov al, 18					; num of flooy to read
 	mov dl, 0					; A驱动器
 	mov bx, 0 					; read floop to [es:bx]
 	mov ah, 2					; read
 	int 0x13
-	; jc show_ah
 	jc error					; carry if something error
 
 next:
+	push bx
 	mov bx, es
-	add bx, 0x2400
+	add bx, 0x240
 	mov es, bx
+	pop bx
+
 	mov cl, 1
-	mov al, 18
 	;; 磁头循环
 	add dh, 1
 	cmp dh, 2
@@ -75,7 +78,7 @@ next:
 
 	mov dh, 0
 	add ch, 1
-	cmp ch, 0x80				; check 柱面
+	cmp ch, 80				; check 柱面
 	jb load_loop				 
 	;; 好像永远走不到这里吗
 	jmp error

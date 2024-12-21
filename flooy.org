@@ -6,6 +6,7 @@
 
 
 * read floppy
+al count of sector to read
 ch 柱面号 cylinder start from 0
 dh 磁头号
 cl 扇面号
