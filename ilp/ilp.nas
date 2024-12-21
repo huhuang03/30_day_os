@@ -73,7 +73,7 @@ next:
 	;; 柱面循环
 	mov dh, 0
 	add ch, 1
-	call show_info
+	; call show_info
 	cmp ch, 80				; check 柱面
 	jb load_loop				 
 	;; 好像永远走不到这里吗
