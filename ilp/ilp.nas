@@ -58,7 +58,7 @@ load_loop:
 next:
 	push bx
 	mov bx, es
-	; add bx, 0x240
+	add bx, 0x240
 	mov es, bx
 	pop bx
 
