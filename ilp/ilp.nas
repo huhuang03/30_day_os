@@ -10,30 +10,30 @@
 ;; floppy is C0-H0-S0 ~ C0-H0-S18 ~ C0-H1-S0 ~ C0-H1-S18 ~ C1-H0-S1
 ;; 80 cylinder 扇区index从1开始
 
-%define TARGET 0X7e00
+%define TARGET 0X9f00
 
 ORG 0x7c00
 
-JMP load			; eb00(if start is at 2) jmp xx, 2 byte size
-; JMP show_ah			; eb00(if start is at 2) jmp xx, 2 byte size
-nop				; 1 byte size
-db "HELLOLPL"			; must 8 byte
-dw 512				; a sector size
-db 1				; cluster size, must be 1
-dw 1
-db 2
-dw 224
-db 0xf0
-dw 0
-dw 18
-dw 2
-dd 0
-dd 2880
-db 0, 0, 0x29
-dd 0xffffff
-db "Hello-OS   "	; size must be 11 byte
-db "FAT12   "		; must be 8 byte
-RESB 18			 
+JMP load
+nop
+DB "HELLOIPL"   ; 启动去的名称可以是任意的字符串（8字节）
+DW 512          ; 每个扇区的大小，fixed
+DB 1            ; 簇的大小，fixed
+DW 1            ; FAT的起始位置（一般从第一个扇区开始）
+DB 2            ; FAT的个数，fixed
+DW 224          ; 根目录的大小（一般设置为224项）
+DW 2880         
+DB 0xf0         
+DW 9
+DW 18
+DW 2
+DD 0
+DD 2880
+DB 0, 0, 0x29
+DD 0xffffffff
+DB "HELLO-OS   "    ; len. 11
+DB "FAT12   "       ; len.  8
+RESB 18
 
 load:
 	mov al, 17
