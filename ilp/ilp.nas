@@ -34,9 +34,6 @@ db "Hello-OS   "	; size must be 11 byte
 db "FAT12   "		; must be 8 byte
 RESB 18			 
 
-error:
-	mov si, err_msg
-	jmp put_loop
 
 put_loop:
 	mov al, [si]				; al = the char to show
@@ -74,6 +71,10 @@ load_loop:
 	;; read floop to [es:bx]
 	int 0x13
 	jc error
+
+error:
+	mov si, err_msg
+	jmp put_loop
 
 next:
 	mov bx, es
