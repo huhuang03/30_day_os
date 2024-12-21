@@ -36,7 +36,6 @@ DB "FAT12   "       ; len.  8
 RESB 18
 
 load:
-	mov al, 17
 	mov bx, TARGET
 	shr bx, 4
 	mov es, bx
@@ -47,18 +46,10 @@ load:
 
 ;; 每次读取al, 第一次读取17个，之后每次都读取18个sector
 load_loop:				
-;; es, bx is the target
-;; al count of sector, max i 63
-;; ch 柱面号的低8位
-;; cl 底6位为扇区号，高2位存储柱面号的高2位
-;; dh 磁头号
-;; dl 驱动器号，0x0为软盘，0x80为硬盘
 	call show_info
-
-	;; how to loop dh?
-	mov al, 18					; num of flooy to read
 	mov dl, 0					; A驱动器
 	mov bx, 0 					; read floop to [es:bx]
+	mov al, 1					; num of sector to read
 	mov ah, 2					; read
 	int 0x13
 	jc error					; carry if something error
@@ -66,16 +57,22 @@ load_loop:
 next:
 	push bx
 	mov bx, es
-	add bx, 0x240
+	add bx, 0x20
 	mov es, bx
 	pop bx
 
+	;; 尝试一次读取一个sector
+	add cl, 1
+	cmp cl, 19
+	jb load_loop
 	mov cl, 1
+
 	;; 磁头循环
 	add dh, 1
 	cmp dh, 2
 	jb load_loop				; dh < 2, load again
 
+	;; 柱面循环
 	mov dh, 0
 	add ch, 1
 	cmp ch, 80				; check 柱面
@@ -123,7 +120,7 @@ show_info:
 	int 0x10
 
 	mov al, cl
-	add al, '0'
+	add al, 'a'
 	mov ah, 0x0e
 	int 0x10
 
