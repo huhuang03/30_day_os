@@ -55,7 +55,7 @@ load_loop:
 next:
 	push bx
 	mov bx, es
-	; add bx, 0x20
+	add bx, 0x20
 	mov es, bx
 	pop bx
 
@@ -74,25 +74,15 @@ next:
 	mov dh, 0
 	add ch, 1
 	; call show_info
-	cmp ch, 80				; check 柱面
+	cmp ch, 39				; check 柱面
+	; cmp ch, 40				; check 柱面
 	jb load_loop				 
-	;; 好像永远走不到这里吗
-	; jmp error
-	jmp fin
+	; jmp _hlt
+	jmp TARGET
 
 error:
 	mov si, err_msg
 	jmp put_loop
-
-_hlt:
-	hlt
-	jmp _hlt
-
-;; if not jump to os, whty hilt??
-fin:
-	JMP TARGET
-	; HLT
-	; JMP fin
 
 err_msg:
 	DB 0x0a,"load sector wrong", 0x0a
@@ -137,6 +127,10 @@ put_loop:
 	mov ah, 0xe					; ah = 0xe show char
 	INT 0x10
 	jmp put_loop
+
+_hlt:
+	hlt
+	jmp _hlt
 
 TIMES 512-2-($-$$) DB 0
 DB 0x55, 0xaa		; magic word that is a ilp

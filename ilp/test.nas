@@ -32,6 +32,3 @@ msg:
 	DB "Hello, world"
 	DB 0x0a
 	DB 0
-	TIMES 0x200 - ($-$$) - 2 DB 0
-	DB 0x55, 0xaa		; magic word that is a ilp
-	TIMES 0x168000 - ($-$$) DB 0
