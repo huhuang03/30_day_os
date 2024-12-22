@@ -1,5 +1,6 @@
 ; naskfunc
 ; TAG=4
+; why you can go 32 bit?
 [BITS 32]
 
 GLOBAL _io_hlt
