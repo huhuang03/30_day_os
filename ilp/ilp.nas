@@ -9,6 +9,7 @@
 ;;; and it's in this the order if we use a file to monitor this floppy
 ;; floppy is C0-H0-S0 ~ C0-H0-S18 ~ C0-H1-S0 ~ C0-H1-S18 ~ C1-H0-S1
 ;; 80 cylinder 扇区index从1开始
+;; for now I can noly read 40 cylinder
 
 %define TARGET 0X7e00
 
