@@ -5,3 +5,4 @@ https://github.com/imangoa/os/blob/master/projects/03_day/harib00f/ipl.nas
 
 * Links
 - [[https://wiki.osdev.org/Memory_Map_(x86)][memorymap]]
+- [[https://k.lse.epita.fr/internals/8042_controller.html][8042]]
