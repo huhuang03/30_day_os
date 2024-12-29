@@ -1,0 +1,6 @@
+* nasm default make which bit?
+Answer: 16
+
+nasm test.nas -o test.bin -l test.lst
+
+gen 16 bit bin.
