@@ -1,0 +1,3 @@
+combine two file 
+
+need declear global, that others can refer to it.
