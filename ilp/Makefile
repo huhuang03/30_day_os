@@ -2,7 +2,7 @@ ilp.bin: ilp.nas
 	nasm ilp.nas -o ilp.bin
 
 test.bin: test.nas
-	nasm test.nas -o test.bin
+	nasm test.nas -o test.bin -l test.lst
 
 test_sys.img: ilp.bin test.bin
 	cargo script ../make_img.rs ilp.bin test.bin test_sys.img

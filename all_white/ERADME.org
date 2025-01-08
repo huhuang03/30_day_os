@@ -1,0 +1,6 @@
+考虑一下程序布局
+
+1. ipl
+2. followed by program
+    1. to_32_bit.asm
+    2. content

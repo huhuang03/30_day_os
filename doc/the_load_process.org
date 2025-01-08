@@ -1,0 +1,4 @@
+- cpu to 0XFFFF0 which is the bios location
+- bios init, and begin load floppy if set the floppy as the starter.
+- bios load floppy first sector to 0x7c00, and then jump to 0x7c00
+- in our situation, we put the ilp at first sector, which load other foppy content to 0x7d00

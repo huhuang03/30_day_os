@@ -1,0 +1,2 @@
+[bits 32]
+JMP DWORD 2*8:0x0000001b

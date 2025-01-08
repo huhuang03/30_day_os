@@ -1,11 +1,14 @@
 This is the pactice project for 30_day_os book
 
+Stop because I can't find a way to link to a 16 bit raw binaray use standard compile tools.
+
 The book need read with the source code.
 https://github.com/imangoa/os/blob/master/projects/03_day/harib00f/ipl.nas
 
 * DOC
-- manually_create_hello_world 手敲字节
-- ilp the first sector of a bootalbe floopy
+- manually_create_hello_world: 手敲字节
+- ilp: the first sector of a bootalbe floopy
+- asm_ld_bin: ld two asm to a bin
 
 * Links
 - [[https://wiki.osdev.org/Memory_Map_(x86)][memorymap]]
